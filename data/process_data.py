@@ -1,16 +1,66 @@
+# Import libraries
 import sys
+import pandas as pd
+from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    """
+    Load the data from the disaster response csvs
+
+    Parameters:
+		messages_filepath (str): 	Path to messages csv
+		categories_filepath (str): 	Path to categories csv
+
+
+	Returns:
+        Dataframe: Merged data 
+    """
+	messages = pd.read_csv(messages_filepath)
+	categories = pd.read_csv(categories_filepath)
+	df = pd.merge(messages,categories,on='id')
+    return df
 
 
 def clean_data(df):
-    pass
+    """
+    Cleans the categories
+
+    Parameters:
+		df (DataFrame): Messy DataFrame
+
+	Returns:
+        Dataframe: Cleaned dataframe
+    """
+
+	categories = df['categories'].str.split( pat=';', expand=True)
+	row = categories.iloc[[1]]
+
+	category_colnames = row.apply(lambda x : x.values[0].split("-")[0])
+	categories.columns = category_colnames
+
+	for column in categories:
+		categories[column] = categories[column].astype(str).str[-1:]
+		categories[column] = categories[column].astype(int)
+		
+	df.drop(['categories'], axis=1, inplace=True)
+	df = df = pd.concat([df,categories], axis=1)
+	df.drop_duplicates(inplace=True)
+	
+	return df
 
 
 def save_data(df, database_filename):
-    pass  
+    """
+    Saves the DataFrame 
+
+    Parameters:
+		df (DataFrame): 				Cleaned DataFrame
+		database_filename (DataFrame): 	Path to the SQLite Database
+
+    """
+	engine = create_engine('sqlite:///' + database_filename + '.db')
+	df.to_sql(database_filename, engine, index=False, if_exists='replace')
 
 
 def main():
