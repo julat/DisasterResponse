@@ -36,14 +36,14 @@ def load_data(database_filepath):
     """
 	
     engine = create_engine('sqlite:///' + database_filepath)
-	df = pd.read_sql_table('DisasterResponseTable',engine)
+    df = pd.read_sql_table('DisasterResponseTable',engine)
 	
-	X = df['message']
-	Y = df.iloc[:,4:]
+    X = df['message']
+    Y = df.iloc[:,4:]
 	
-	category_names = Y.columns
+    category_names = Y.columns
 	
-	return X,Y,category_names
+    return X,Y,category_names
 
 
 def tokenize(text):
@@ -82,12 +82,12 @@ def build_model():
         ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
 	
-	parameters = {'clf__estimator__n_estimators': [50, 100, 200],
+    parameters = {'clf__estimator__n_estimators': [50, 100, 200],
             'clf__estimator__min_samples_split': [2, 3, 4]}
 
-	cv = GridSearchCV(pipeline_rfc, param_grid=parameters)
+    cv = GridSearchCV(pipeline_rfc, param_grid=parameters)
 	
-	return cv
+    return cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
@@ -102,9 +102,9 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
     """
 	
-	Y_pred = pipeline_rfc.predict(X_test)
+    Y_pred = model.predict(X_test)
 	
-	i = 0
+    i = 0
     for col in Y_test:
         print(col)
         print(classification_report(Y_test[col], Y_pred[:, i]))
@@ -121,7 +121,7 @@ def save_model(model, model_filepath):
 
     """
 	
-    pickle.dump(pipeline, open(pickle_filepath, 'wb'))
+    pickle.dump(model, open(model_filepath, 'wb'))
 
 
 def main():

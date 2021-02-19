@@ -16,9 +16,9 @@ def load_data(messages_filepath, categories_filepath):
 	Returns:
         Dataframe: Merged data 
     """
-	messages = pd.read_csv(messages_filepath)
-	categories = pd.read_csv(categories_filepath)
-	df = pd.merge(messages,categories,on='id')
+    messages = pd.read_csv(messages_filepath)
+    categories = pd.read_csv(categories_filepath)
+    df = pd.merge(messages,categories,on='id')
     return df
 
 
@@ -33,21 +33,21 @@ def clean_data(df):
         Dataframe: Cleaned dataframe
     """
 
-	categories = df['categories'].str.split( pat=';', expand=True)
-	row = categories.iloc[[1]]
+    categories = df['categories'].str.split( pat=';', expand=True)
+    row = categories.iloc[[1]]
 
-	category_colnames = row.apply(lambda x : x.values[0].split("-")[0])
-	categories.columns = category_colnames
+    category_colnames = row.apply(lambda x : x.values[0].split("-")[0])
+    categories.columns = category_colnames
 
-	for column in categories:
-		categories[column] = categories[column].astype(str).str[-1:]
-		categories[column] = categories[column].astype(int)
+    for column in categories:
+        categories[column] = categories[column].astype(str).str[-1:]
+        categories[column] = categories[column].astype(int)
 		
-	df.drop(['categories'], axis=1, inplace=True)
-	df = df = pd.concat([df,categories], axis=1)
-	df.drop_duplicates(inplace=True)
+    df.drop(['categories'], axis=1, inplace=True)
+    df = df = pd.concat([df,categories], axis=1)
+    df.drop_duplicates(inplace=True)
 	
-	return df
+    return df
 
 
 def save_data(df, database_filename):
@@ -59,8 +59,8 @@ def save_data(df, database_filename):
 		database_filename (DataFrame): 	Path to the SQLite Database
 
     """
-	engine = create_engine('sqlite:///' + database_filename + '.db')
-	df.to_sql(database_filename, engine, index=False, if_exists='replace')
+    engine = create_engine('sqlite:///' + database_filename + '.db')
+    df.to_sql(database_filename, engine, index=False, if_exists='replace')
 
 
 def main():
