@@ -42,6 +42,7 @@ def clean_data(df):
     for column in categories:
         categories[column] = categories[column].astype(str).str[-1:]
         categories[column] = categories[column].astype(int)
+        categories[column] = categories[column].map(lambda x: 1 if x > 1 else x)
 		
     df.drop(['categories'], axis=1, inplace=True)
     df = df = pd.concat([df,categories], axis=1)
